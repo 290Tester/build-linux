@@ -1,0 +1,58 @@
+name: Build ARM64 Kernel
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-kernel:
+    runs-on: ubuntu-24.04-arm
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt build-dep linux || sudo apt install -y \
+            build-essential bc bison flex \
+            libssl-dev libncurses-dev \
+            libelf-dev cpio kmod rsync
+      
+      - name: Configure kernel
+        run: |
+          cp config-6.12.63+deb13-arm64 .config
+          echo 'CONFIG_LOCALVERSION="-Segfault北北"' >> .config
+          make olddefconfig
+      
+      - name: Build kernel
+        run: |
+          make -j$(nproc)
+      
+      - name: Get kernel version
+        id: get_version
+        run: |
+          VERSION=$(make kernelversion)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "full_version=${VERSION}-Segfault北北" >> $GITHUB_OUTPUT
+      
+      - name: Package kernel
+        run: |
+          mkdir -p output
+          cp arch/arm64/boot/Image output/
+          cp .config output/config
+          find arch/arm64/boot/dts -name "*.dtb" -exec cp {} output/ \;
+          if [ -d modules ]; then
+            tar -czf modules-${{ steps.get_version.outputs.full_version }}.tar.gz modules/
+          fi
+          tar -czf kernel-${{ steps.get_version.outputs.full_version }}.tar.gz output/
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-${{ steps.get_version.outputs.full_version }}
+          path: |
+            kernel-*.tar.gz
+            modules-*.tar.gz
