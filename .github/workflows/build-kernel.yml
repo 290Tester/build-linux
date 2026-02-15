@@ -47,6 +47,7 @@ jobs:
           cd $KERNEL_SRC
           VERSION=$(make kernelversion)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "artifact_version=${VERSION}-Segfault" >> $GITHUB_OUTPUT
           echo "full_version=${VERSION}-Segfault北北" >> $GITHUB_OUTPUT
       
       - name: Package kernel
@@ -57,16 +58,16 @@ jobs:
           cp .config output/config
           find arch/arm64/boot/dts -name "*.dtb" -exec cp {} output/ \;
           
-          tar -czf ../kernel-${{ steps.get_version.outputs.full_version }}.tar.gz output/
+          tar -czf ../kernel-${{ steps.get_version.outputs.artifact_version }}.tar.gz output/
           
           if [ -d modules ]; then
-            tar -czf ../modules-${{ steps.get_version.outputs.full_version }}.tar.gz modules/
+            tar -czf ../modules-${{ steps.get_version.outputs.artifact_version }}.tar.gz modules/
           fi
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: kernel-${{ steps.get_version.outputs.full_version }}
+          name: kernel-${{ steps.get_version.outputs.artifact_version }}
           path: |
             kernel-*.tar.gz
             modules-*.tar.gz
