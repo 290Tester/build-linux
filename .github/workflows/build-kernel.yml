@@ -20,7 +20,7 @@ jobs:
             build-essential bc bison flex \
             libssl-dev libncurses-dev \
             libelf-dev cpio kmod rsync
-          sudo apt install llvm clang lld
+          sudo apt install llvm clang lld procps
       
       - name: Download and configure kernel
         run: |
@@ -32,10 +32,6 @@ jobs:
           wget https://raw.githubusercontent.com/290Tester/build-linux/refs/heads/main/config-6.12.63+deb13-arm64 -O .config
           export KBUILD_BUILD_USER="root"
           export KBUILD_BUILD_HOST="Neo9"
-          export CC="clang"
-          export AR="llvm-ar"
-          export LD="ld.lld"
-          export AS="llvm-as"
           export LLVM="1"
           echo 'CONFIG_LOCALVERSION="-Segfault北北"' >> .config
           
@@ -43,6 +39,10 @@ jobs:
           
           echo "KERNEL_SRC=$(pwd)" >> $GITHUB_ENV
       
+      - name: TestCPU-RAM
+        run: |
+          cat /proc/cpuinfo
+          free
       - name: Build kernel
         run: |
           cd $KERNEL_SRC
@@ -54,7 +54,7 @@ jobs:
           cd $KERNEL_SRC
           VERSION=$(make kernelversion)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "full_version=${VERSION}-Segfault北北" >> $GITHUB_OUTPUT
+          echo "full_version=${VERSION}-Segfault" >> $GITHUB_OUTPUT
       
       - name: Package kernel
         run: |
@@ -77,3 +77,4 @@ jobs:
           path: |
             kernel-*.tar.gz
             modules-*.tar.gz
+            
