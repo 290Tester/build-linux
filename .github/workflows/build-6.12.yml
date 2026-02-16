@@ -20,7 +20,7 @@ jobs:
             build-essential bc bison flex \
             libssl-dev libncurses-dev \
             libelf-dev cpio kmod rsync
-          sudo apt install llvm clang lld procps zstd tar -y
+          sudo apt install llvm clang lld procps lz4 tar -y
       
       - name: Download and configure kernel
         run: |
@@ -66,20 +66,20 @@ jobs:
       - name: Package kernel
         run: |
           cd $KERNEL_SRC
-          tar -cf - . | zstd --ultra -22 -T0 --long -o $GITHUB_WORKSPACE/linux-${{ steps.get_version.outputs.version }}-segfault-neox-arm64-full.tar.zst
+          tar -cf - . | lz4 -9 - > linux-${{ steps.get_version.outputs.version }}-segfault-neox-arm64-full.tar.lz4
 
       - name: Upload artifact (for CI debug)
         uses: actions/upload-artifact@v4
         with:
           name: kernel-${{ steps.get_version.outputs.version }}
-          path: linux-${{ steps.get_version.outputs.version }}-segfault-neox-arm64-full.tar.zst
+          path: linux-${{ steps.get_version.outputs.version }}-segfault-neox-arm64-full.tar.lz4
           compression-level: 0
 
       - name: Upload to Release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v1
         with:
-          files: linux-${{ steps.get_version.outputs.version }}-segfault-neox-arm64-full.tar.zst
+          files: linux-${{ steps.get_version.outputs.version }}-segfault-neox-arm64-full.tar.lz4
           tag_name: v${{ steps.get_version.outputs.version }}-segfault-${{ github.run_number }}-${{ github.sha }}
           name: "Kernel ${{ steps.get_version.outputs.full_version }}-neox ARM64"
           body: |
