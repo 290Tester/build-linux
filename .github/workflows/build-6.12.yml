@@ -30,7 +30,7 @@ jobs:
           cd linux-6.12.71
           
           wget https://raw.githubusercontent.com/290Tester/build-linux/refs/heads/main/config-6.12.63+deb13-arm64 -O .config
-          wget wget https://raw.githubusercontent.com/290Tester/build-linux/refs/heads/main/mkcompile_h -O scripts/mkcompile_h
+          wget https://raw.githubusercontent.com/290Tester/build-linux/refs/heads/main/mkcompile_h -O scripts/mkcompile_h
           chmod +x+w+r scripts/mkcompile_h
           export KBUILD_BUILD_USER="root"
           export KBUILD_BUILD_HOST="NeoX-北北"
