@@ -20,7 +20,7 @@ jobs:
             build-essential bc bison flex \
             libssl-dev libncurses-dev \
             libelf-dev cpio kmod rsync
-          sudo apt install llvm clang lld procps
+          sudo apt install llvm clang lld procps zstd tar -y
       
       - name: Download and configure kernel
         run: |
@@ -48,6 +48,7 @@ jobs:
         run: |
           cat /proc/cpuinfo
           free
+      
       - name: Build kernel
         run: |
           export KBUILD_BUILD_TIMESTAMP="1970-01-01 00:00:00" KBUILD_BUILD_USER="root" KBUILD_BUILD_HOST="NeoX-北北" KBUILD_BUILD_VERSION="1" LLVM="1"
@@ -65,22 +66,26 @@ jobs:
       - name: Package kernel
         run: |
           cd $KERNEL_SRC
-          mkdir -p output
-          cp arch/arm64/boot/Image output/
-          cp .config output/config
-          find arch/arm64/boot/dts -name "*.dtb" -exec cp {} output/ \;
-          
-          tar -czf ../kernel-${{ steps.get_version.outputs.full_version }}.tar.gz output/
-          
-          if [ -d modules ]; then
-            tar -czf ../modules-${{ steps.get_version.outputs.full_version }}.tar.gz modules/
-          fi
-      
-      - name: Upload artifact
+          tar -cf - . | zstd --ultra -22 -T0 --long -o $GITHUB_WORKSPACE/linux-${{ steps.get_version.outputs.version }}-segfault-neox-arm64-full.tar.zst
+
+      - name: Upload artifact (for CI debug)
         uses: actions/upload-artifact@v4
         with:
-          name: kernel-6.12
-          path: |
-            kernel-*.tar.gz
-            modules-*.tar.gz
-            
+          name: kernel-${{ steps.get_version.outputs.version }}
+          path: linux-${{ steps.get_version.outputs.version }}-segfault-neox-arm64-full.tar.zst
+          compression-level: 0
+
+      - name: Upload to Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: linux-${{ steps.get_version.outputs.version }}-segfault-neox-arm64-full.tar.zst
+          tag_name: v${{ steps.get_version.outputs.version }}-segfault-${{ github.run_number }}-${{ github.sha }}
+          name: "Kernel ${{ steps.get_version.outputs.full_version }}-neox ARM64"
+          body: |
+            完整源码树构建产物
+            - 压缩: zstd --ultra -22 -T0 --long
+            - 架构: ARM64
+            - 版本: ${{ steps.get_version.outputs.full_version }}-neox
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
