@@ -28,18 +28,14 @@ jobs:
       
       - name: Download and configure kernel
         run: |
-          wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.71.tar.xz
-          tar xf linux-6.12.71.tar.xz
-          
-          cd linux-6.12.71
-          
+          wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.19.tar.xz
+          tar xf linux-6.19.tar.xz
+          cd linux-6.19
           wget https://raw.githubusercontent.com/290Tester/build-linux/refs/heads/main/config-6.12.63+deb13-arm64 -O .config
           wget https://raw.githubusercontent.com/290Tester/build-linux/refs/heads/main/mkcompile_h -O scripts/mkcompile_h
           chmod +x+w+r scripts/mkcompile_h
-          export KBUILD_BUILD_USER="root"
-          export KBUILD_BUILD_HOST="NeoX-北北"
           export LLVM="1"
-          echo 'KBUILD_BUILD_VERSION="1"' >> .config
+          echo 'CONFIG_LOCALVERSION="-Segfault北北"' >> .config
           make olddefconfig || (wget -O .config https://raw.githubusercontent.com/290Tester/build-linux/refs/heads/main/config-6.12.63+deb13-arm64 && echo 'CONFIG_LOCALVERSION="-Segfault北北"' >> .config && make olddefconfig)
           
           echo "KERNEL_SRC=$(pwd)" >> $GITHUB_ENV
@@ -83,7 +79,7 @@ jobs:
           tag_name: v${{ steps.get_version.outputs.version }}-segfault-${{ github.run_number }}-${{ github.sha }}
           name: "Kernel ${{ steps.get_version.outputs.full_version }}-neox ARM64"
           body: |
-            完整源码树构建产物
+            完整源码树构建产物 (Linux 6.19)
             - 压缩: zstd --ultra -22 -T0 --long
             - 架构: ARM64
             - 版本: ${{ steps.get_version.outputs.full_version }}-neox
