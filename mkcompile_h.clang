@@ -1,0 +1,16 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+
+UTS_MACHINE="x86_64"
+CC_VERSION="North-北 clang version 19.1.7 (deb+13)"
+LD_VERSION="North-北 LLD 19.1.7 (compatible with GNU linkers)"
+
+LINUX_COMPILE_BY="root"
+LINUX_COMPILE_HOST="NeoX-北北"
+
+cat <<EOF
+#define UTS_MACHINE                "${UTS_MACHINE}"
+#define LINUX_COMPILE_BY        "${LINUX_COMPILE_BY}"
+#define LINUX_COMPILE_HOST        "${LINUX_COMPILE_HOST}"
+#define LINUX_COMPILER                "${CC_VERSION}, ${LD_VERSION}"
+EOF
