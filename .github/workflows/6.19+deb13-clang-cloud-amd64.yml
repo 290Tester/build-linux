@@ -35,8 +35,8 @@ jobs:
           wget https://raw.githubusercontent.com/290Tester/build-linux/refs/heads/main/mkcompile_h.clang -O scripts/mkcompile_h
           chmod +x+w+r scripts/mkcompile_h
           export LLVM="1"
-          echo 'CONFIG_LOCALVERSION="-clang-cloud-Segfault北北"' >> .config
-          make olddefconfig || (wget -O .config https://raw.githubusercontent.com/290Tester/build-linux/refs/heads/main/config-6.12.69+deb13-cloud-amd64 && echo 'CONFIG_LOCALVERSION="-Segfault北北"' >> .config && make olddefconfig)
+          echo 'CONFIG_LOCALVERSION="-clang-cloud-Zako-Neko"' >> .config
+          make olddefconfig || (wget -O .config https://raw.githubusercontent.com/290Tester/build-linux/refs/heads/main/config-6.12.69+deb13-cloud-amd64 && echo 'CONFIG_LOCALVERSION="-Zako-Neko"' >> .config && make olddefconfig)
           
           echo "KERNEL_SRC=$(pwd)" >> $GITHUB_ENV
       
@@ -47,9 +47,9 @@ jobs:
       
       - name: Build kernel
         run: |
-          export KBUILD_BUILD_TIMESTAMP="1970-01-01 00:00:00" KBUILD_BUILD_USER="root" KBUILD_BUILD_HOST="NeoX-北北" KBUILD_BUILD_VERSION="1" LLVM="1"
+          export KBUILD_BUILD_TIMESTAMP="1970-01-01 00:00:00" KBUILD_BUILD_USER="root" KBUILD_BUILD_HOST="Murasame" KBUILD_BUILD_VERSION="1" LLVM="1"
           cd $KERNEL_SRC
-          make KBUILD_BUILD_TIMESTAMP="1970-01-01 00:00:00" KBUILD_BUILD_USER="root" KBUILD_BUILD_HOST="NeoX-北北" KBUILD_BUILD_VERSION="1" LLVM="1" -j$(nproc)
+          make KBUILD_BUILD_TIMESTAMP="1970-01-01 00:00:00" KBUILD_BUILD_USER="root" KBUILD_BUILD_HOST="Murasame" KBUILD_BUILD_VERSION="1" LLVM="1" -j$(nproc)
       
       - name: Get kernel version
         id: get_version

@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: GPL-2.0
 
 UTS_MACHINE="x86_64"
-CC_VERSION="North-北 clang version 19.1.7 (deb+13)"
-LD_VERSION="North-北 LLD 19.1.7 (compatible with GNU linkers)"
+CC_VERSION="clang version 22.1.0 (Nacho Neko)"
+LD_VERSION="LLD 22.1.0-Zako-Neko-北北 (compatible with GNU linkers)"
 
 LINUX_COMPILE_BY="root"
-LINUX_COMPILE_HOST="NeoX-北北"
+LINUX_COMPILE_HOST="Murasame"
 
 cat <<EOF
 #define UTS_MACHINE                "${UTS_MACHINE}"
